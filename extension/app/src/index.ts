@@ -26,6 +26,9 @@ import {
 } from './blindfold';
 import autocomplete from './lib/autocomplete';
 import { i18n } from './i18n';
+import WebSocketManager from './WebSocketManager';
+
+const ws = new WebSocketManager();
 
 /**
  * Prepare the extension code and run
