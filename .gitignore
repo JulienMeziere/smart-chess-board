@@ -132,4 +132,4 @@ dist
 .tmp
 app.zip
 .DS_Store
-build.js
+extension/app/build.js
