@@ -1,16 +1,6 @@
-import {
-  postMessage,
-} from './utils';
-import {
-  toggleBlindfoldMode,
-} from './blindfold';
-import {
-  Nullable,
-} from './types';
-import { i18n } from './i18n';
+import { Nullable } from './types';
 
 export const commands : Record<string, () => void> = {
-  blindfold: toggleBlindfoldMode,
   resign: () => {
     const resignButton = <Nullable<HTMLButtonElement>>document.querySelector('.resign-button-component');
     resignButton && resignButton.click();
@@ -21,17 +11,14 @@ export const commands : Record<string, () => void> = {
   },
 };
 
-/**
- * Parse command text (or return null if not a command)
- */
 export function parseCommand(input: string) {
-  if (input[0] === '/') {
-    const command = commands[input.slice(1)];
+  if (input[0] !== '/') return false;
 
-    return command || (() => {
-      postMessage(i18n('commandNotFound', { command: input }));
-    });
+  const command = commands[input.slice(1)];
+  if (command) {
+    command();
+    return true;
   }
 
-  return null;
+  return false;
 }

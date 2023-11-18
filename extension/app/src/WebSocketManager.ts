@@ -1,5 +1,5 @@
 import { go } from './chess';
-import { getBoard } from './chessboard';
+import { ComponentChessboard } from './chessboard';
 
 const MAX_NB_OF_RETRIES = 3;
 const RETRY_TIMEOUT = 1000;
@@ -35,7 +35,7 @@ export class WebSocketManager {
   private onMessage({ data }: WebSocketEventMap['message']) {
     if (typeof data !== 'string') return;
 
-    const board = getBoard();
+    const board = ComponentChessboard.getBoard();
     board && go(board, data);
     console.log(`[WSManager] received: '${data}'`);
   }
