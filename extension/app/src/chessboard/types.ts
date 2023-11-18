@@ -2,7 +2,7 @@ import {
   AnyFunction,
   TArea,
   TPiece,
-} from '../../types';
+} from '../types';
 
 export interface IHighlights {
   addModule: AnyFunction

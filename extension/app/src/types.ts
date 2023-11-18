@@ -2,9 +2,7 @@ export type Nullable<T> = T | null;
 
 export type AnyFunction = (...args: any[]) => any;
 
-export interface IChessboardConstructor {
-  new (element: Element): IChessboard;
-}
+export type GetPiecesSetupType = Record<string, { color: number, type: string, area: TArea }>;
 
 export interface IChessboard {
   getElement: () => Element
@@ -12,7 +10,7 @@ export interface IChessboard {
   makeMove: (fromSq: TArea, toSq: TArea, promotionPiece?: string) => void
   isLegalMove: (fromSq: TArea, toSq: TArea) => boolean
   isPlayersMove: () => boolean
-  getPiecesSetup: () => Record<string, { color: number, type: string, area: TArea }>
+  getPiecesSetup: () => GetPiecesSetupType;
   markArrow: (fromSq: TArea, toSq: TArea) => void
   unmarkArrow: (fromSq: TArea, toSq: TArea) => void
   clearMarkedArrows: () => void
@@ -53,24 +51,3 @@ export interface IMoveDetails {
   check: boolean
   checkmate: boolean
 }
-
-export interface IConfig {
-  defaultLocale: string,
-}
-
-export type TTranslationId =
-  'ambiguousMove' |
-  'incorrectMove' |
-  'illegalMove' |
-  'commandNotFound' |
-  'inputHint' |
-  'focusHint' |
-  'focusHintFromOther' |
-  'blindFoldPeekHint' |
-  'blindFoldOn' |
-  'blindfoldToggleHint' |
-  '_test' |
-  '_test_1_placeholder' |
-  '_test_2_placeholders';
-
-export type TLocaleSet = Record<TTranslationId, string>;
