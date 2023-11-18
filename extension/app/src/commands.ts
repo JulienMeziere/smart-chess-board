@@ -2,7 +2,7 @@ import { Nullable } from './types';
 
 export const commands : Record<string, () => void> = {
   resign: () => {
-    const resignButton = <Nullable<HTMLButtonElement>>document.querySelector('.resign-button-component');
+    const resignButton = <Nullable<HTMLButtonElement>>document.querySelector('.resign-button-component, button[aria-label="Resign"]');
     resignButton && resignButton.click();
   },
   draw: () => {

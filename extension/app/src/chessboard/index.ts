@@ -3,6 +3,7 @@ import {
   IChessboard,
   TArea,
   IMoveDetails,
+  MoveCallbackType,
 } from '../types';
 import {
   IGame,
@@ -25,8 +26,9 @@ const ERROR_AREA_COLOR = '#ff4444';
  */
 export class ComponentChessboard implements IChessboard {
   private static instance: ComponentChessboard | null = null;
-  element: TElementWithGame
-  game: IGame
+  private element: TElementWithGame
+  private game: IGame
+  private movaCallbacks: Record<string, MoveCallbackType> = {};
 
   static getBoard() {
     if (ComponentChessboard.instance) return ComponentChessboard.instance;
@@ -40,10 +42,18 @@ export class ComponentChessboard implements IChessboard {
     this.element = <TElementWithGame>element;
     this.game = this.element.game;
 
-    this.game.on('Move', () => {
-      const event = new Event('ccSmartChessBoard-draw');
-      document.dispatchEvent(event);
+    this.game.on('Move', (event) => {
+      const move = this.getMoveData(event);
+      Object.values(this.movaCallbacks).forEach((callback) => callback(move, this.isPlayersMove()));
     });
+  }
+
+  removeMoveCallback(id: string) {
+    delete this.movaCallbacks[id];
+  }
+
+  registerMoveCallback(id: string, callback: MoveCallbackType) {
+    this.movaCallbacks[id] = callback;
   }
 
   getElement() {
@@ -203,7 +213,7 @@ export class ComponentChessboard implements IChessboard {
     }
   }
 
-  _getMoveData(event: IMoveEvent): IMoveDetails {
+  private getMoveData(event: IMoveEvent): IMoveDetails {
     const data = event.data.move;
     let moveType = 'move';
     if (data.san.startsWith('O-O-O')) {

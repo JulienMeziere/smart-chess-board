@@ -1,5 +1,7 @@
 import { go } from './chess';
 import { ComponentChessboard } from './chessboard';
+import { IMoveDetails } from './types';
+import { WebSocketMessageType } from './commonTypes';
 
 const MAX_NB_OF_RETRIES = 3;
 const RETRY_TIMEOUT = 1000;
@@ -8,12 +10,19 @@ export class WebSocketManager {
   private numberOfRetries: number = 0;
   private socket: WebSocket;
   private url: string;
+  private board: ComponentChessboard | null = null;
 
   constructor(url = 'ws://localhost:3000') {
     this.url = url;
     this.socket = new WebSocket(this.url);
     this.init();
-    (window as any).WSManager = this;
+
+    this.board = ComponentChessboard.getBoard();
+    if (!this.board) {
+      console.warn('[WSManager] Board not found!');
+      return;
+    };
+    this.board.registerMoveCallback('WebSocketManager', (move, isNowPlayersTurn) => this.onMove(move, isNowPlayersTurn));
   }
 
   private init(reset = false) {
@@ -28,15 +37,15 @@ export class WebSocketManager {
 
   private onOpen(_: WebSocketEventMap['open']) {
     console.log('[WSManager] Connected!');
-    this.send('{ role: "chrome headless" }');
+    this.send({ type: 'ROLE', data: 'chrome headless' });
     this.numberOfRetries = 0;
   }
 
   private onMessage({ data }: WebSocketEventMap['message']) {
-    if (typeof data !== 'string') return;
+    if (typeof data !== 'string' || !this.board) return;
 
-    const board = ComponentChessboard.getBoard();
-    board && go(board, data);
+    const moveStatus = go(this.board, data);
+    this.send({ type: 'MOVE_STATUS', data: moveStatus });
     console.log(`[WSManager] received: '${data}'`);
   }
 
@@ -55,10 +64,16 @@ export class WebSocketManager {
     console.error('[WSManager] Error:', event);
   }
 
-  send(message: string) {
+  send(message: WebSocketMessageType) {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return;
-    console.log(`[WSManager] sending: '${message}'`);
-    this.socket.send(message);
+    console.log('[WSManager] sending:', message);
+    this.socket.send(JSON.stringify(message));
+  }
+
+  private onMove(move: IMoveDetails, isNowPlayersTurn: boolean) {
+    if (!isNowPlayersTurn) return;
+
+    this.send({ type: 'OPPONENT_MOVE', data: move });
   }
 }
 
