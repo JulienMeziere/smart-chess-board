@@ -1,17 +1,13 @@
+import { ComponentChessboard } from './chessboard';
 import {
   onDocumentReady,
 } from './utils';
 import WebSocketManager from './WebSocketManager';
 
-const ws = new WebSocketManager();
+let webSocket: WebSocketManager;
 
-/**
- * Prepare the extension code and run
- */
 function init() {
-  document.addEventListener('ccSmartChessBoard-draw', () => {
-    console.log('On move');
-  });
+  webSocket = new WebSocketManager();
 }
 
 onDocumentReady(() => {

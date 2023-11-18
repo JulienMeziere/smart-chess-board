@@ -8,6 +8,7 @@ import {
   IMoveTemplate,
   IPotentialMoves,
   IMove,
+  MoveReturnType,
 } from './types';
 
 /**
@@ -216,29 +217,6 @@ export function getLegalMoves(board: IChessboard, potentialMoves: IPotentialMove
 }
 
 /**
- * Handle user input and act in appropriate way
- * The function uses active board on the screen if there's any
- */
-export function go(board: IChessboard, input: string) : boolean {
-  if (parseCommand(input)) return true;
-
-  const parseResult = parseMoveInput(input);
-  const moves = getLegalMoves(board, parseResult);
-  if (moves.length === 1) {
-    const move = moves[0];
-    makeMove(board, move.from, move.to, move.promotionPiece);
-
-    return true;
-  } else if (moves.length > 1) {
-    console.log('Ambiguous move', { move: input });
-  } else {
-    console.log('Incorrect move', { move: input });
-  }
-
-  return false;
-}
-
-/**
  * Check move and make it if it's legal
  * This function relies on chess.com chessboard interface
  */
@@ -247,16 +225,39 @@ export function makeMove(
   fromField: TArea,
   toField: TArea,
   promotionPiece?: TPiece,
-) {
+): MoveReturnType {
   if (board.isLegalMove(fromField, toField)) {
       board.makeMove(fromField, toField, promotionPiece);
       try {
         board.submitDailyMove();
+        return { status: 'OK' };
       } catch(e) {
-        console.log(e);
+        return { status: 'ERROR', error: JSON.stringify(e) };
       }
   } else {
     const move = fromField + '-' + toField;
     console.log('Illegal move', { move });
+    return { status: 'FAILURE', reason: 'Illegal move' };
+  }
+}
+
+/**
+ * Handle user input and act in appropriate way
+ * The function uses active board on the screen if there's any
+ */
+export function go(board: IChessboard, input: string): MoveReturnType {
+  if (parseCommand(input)) return { status: 'OK' };
+
+  const parseResult = parseMoveInput(input);
+  const moves = getLegalMoves(board, parseResult);
+  if (moves.length === 1) {
+    const move = moves[0];
+    return makeMove(board, move.from, move.to, move.promotionPiece);
+  } else if (moves.length > 1) {
+    console.log('Ambiguous move', { move: input });
+    return { status: 'FAILURE', reason: 'Ambiguous move' };
+  } else {
+    console.log('Incorrect move', { move: input });
+    return { status: 'FAILURE', reason: 'Incorrect move' };
   }
 }
