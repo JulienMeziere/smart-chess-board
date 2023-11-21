@@ -133,3 +133,4 @@ dist
 app.zip
 .DS_Store
 extension/app/build.js
+browserData

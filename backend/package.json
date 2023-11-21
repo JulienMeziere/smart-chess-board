@@ -3,8 +3,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon --exec ts-node src/index.ts",
-        "build": "tsc"
+        "start": "nodemon --exec ts-node src/index.ts --ignore src/ChessComController/Browser",
+        "build": "tsc",
+        "updateScript": "cd ../extension && npm run build && cp app/build.js ../backend/src/ChessComController/Browser/ChessBoardController.js"
     },
     "repository": "git@github.com:JulienMeziere/SmartChessBoard.git",
     "author": "Julien MEZIERE <julien.meziere@fashionnova.com>",
@@ -14,6 +15,7 @@
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "nodemon": "^3.0.1",
+        "puppeteer": "^21.5.2",
         "ws": "^8.14.2"
     },
     "devDependencies": {

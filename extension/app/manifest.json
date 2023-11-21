@@ -1,13 +1,12 @@
 {
-    "name": "__MSG_appName__",
+    "name": "SmartChessBoard",
     "version": "6.4.0",
     "manifest_version": 3,
-    "description": "__MSG_appDescription__",
+    "description": "This extension makes chess.com games controllable by a websocket connection.",
     "icons": {
         "16": "images/icon-16.png",
         "128": "images/icon-128.png"
     },
-    "default_locale": "en",
     "host_permissions": [
         "https://www.chess.com/"
     ],

@@ -4,6 +4,9 @@ import http from 'http';
 import WebSocketManager, { RawData, MessageEvent, Data } from 'ws';
 import readline from 'readline';
 import { WebSocketMessageType } from '../../extension/app/src/commonTypes';
+import initChessComController from './ChessComController';
+
+initChessComController({ headless: false, logBrowser: true, logBrowserFilter: 'ChessBoardController' });
 
 function parseMessage(data: RawData | Data): WebSocketMessageType | null {
   try {
